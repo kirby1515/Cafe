@@ -1,0 +1,50 @@
+[
+    {
+        "id": 1,
+        "name": "Cheesy Fries",
+        "price": 85,
+        "image": "images\/fries1.png"
+    },
+    {
+        "id": 2,
+        "name": "Smokey Burger",
+        "price": 120,
+        "image": "images\/burger1.png"
+    },
+    {
+        "id": 3,
+        "name": "Wintermelon Milktea",
+        "price": 80,
+        "image": "images\/menu-wintermelon1.png"
+    },
+    {
+        "id": 4,
+        "name": "Milktea with Coffee Jelly",
+        "price": 120,
+        "image": "images\/menu-milktea1.png"
+    },
+    {
+        "id": 5,
+        "name": "Milktea",
+        "price": 20,
+        "image": "images\/menu-milktea1.png"
+    },
+    {
+        "id": 6,
+        "name": "Pizza",
+        "price": 50,
+        "image": "images\/pizza.jpg"
+    },
+    {
+        "id": 7,
+        "name": "SkyFlakes",
+        "price": 20,
+        "image": "images\/sky.jpg"
+    },
+    {
+        "id": 9,
+        "name": "Coke",
+        "price": 20,
+        "image": "images\/cok.png"
+    }
+]
