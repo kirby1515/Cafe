@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="icon" href="images/logo.jpg?=2">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css' rel='stylesheet'>
+</head>
+
+<body>
+    
+    <div class="sidebar">
+        <div class="logo"></div>
+        <ul class="menu">
+            <li class="active">
+                <a href="dashboard.html">
+                    <i class='fas fa-tachometer-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="profile-content.php" class="sidebar-link">
+                    <i class='fas fa-user'></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li>
+                <a href="orderlist.php" class="sidebar-link">
+                    <i class="fas fa-list"></i>
+                    <span>Order History</span>
+                </a>
+            </li>
+            <li>
+                <a href="product-content.php" class="sidebar-link" data-page="product-content.php">
+                    <i class="fa-brands fa-product-hunt"></i>
+                    <span>Products</span>
+                </a>
+            </li>
+            <li>
+                <a href="account-create.php" class="sidebar-link">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Add Account</span>
+                </a>
+            </li>
+
+
+            <li class="logout">
+                <a href="logout.php">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+            <li>
+                <a href="home.php" class="sidebar-link">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="header--wrapper">
+            <div class="header--title">
+                <span>Primary</span>
+                <h2>Dashboard</h2>
+            </div>
+            <div class="user--info">
+             
+                <img src="images/logo.jpg" alt="">
+            </div>
+        </div>
+
+            <div class="card--container">
+<h3 class="main--title">Sale's Data</h3>
+                <div class="card--wrapper">
+                    <div class="payment--card light-red">
+                        <div class="card--header">
+                            <div class="amount">
+                                <span class="title">
+                                    Total Sales
+                                </span>
+                                <span class="amount-value" id="totalSales">₱0.00</span>
+                            </div>
+                            <i class="fa-solid fa-money-bill icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="payment--card light-red">
+                        <div class="card--header">
+                            <div class="amount">
+                                <span class="title">
+                                    Total Orders
+                                </span>
+                                <span class="amount-value" id="totalOrders">0</span>
+                            </div>
+                            <i class='fa-solid fa-list icon dark-purple'></i>
+                        </div>
+                    </div>
+
+                    <div class="payment--card light-blue">
+                        <div class="card--header">
+                            <div class="amount">
+                                <span class="title">
+                                    Total Customers
+                                </span>
+                                <span class="amount-value" id="totalCustomers">0</span>
+                            </div>
+                            <i class='fa-solid fa-user icon dark-green'></i>
+                        </div>
+                    </div>
+
+                    <div class="payment--card light-blue">
+                        <div class="card--header">
+                            <div class="amount">
+                                <span class="title">
+                                    Total Proceed
+                                </span>
+                                <span class="amount-value" id="totalProceed">0</span>
+                            </div>
+                            <i class='fa-solid fa-check icon dark-blue'></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tubular--wrapper">
+                <h3 class="main--title">Sales Chart</h3>
+                <canvas id="salesChart" width="400" height="200"></canvas>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        async function fetchDashboardData() {
+            try {
+                const response = await fetch('api/dashboard_data.php');
+                const data = await response.json();
+                if (data.error) {
+                    console.error(data.error);
+                    // Try to load cached data from localStorage
+                    const cachedData = localStorage.getItem('dashboardData');
+                    if (cachedData) {
+                        const parsedData = JSON.parse(cachedData);
+                        updateDashboard(parsedData);
+                    }
+                    return;
+                }
+                updateDashboard(data);
+                // Cache data in localStorage
+                localStorage.setItem('dashboardData', JSON.stringify(data));
+            } catch (error) {
+                console.error('Error fetching dashboard data:', error);
+                // Try to load cached data from localStorage
+                const cachedData = localStorage.getItem('dashboardData');
+                if (cachedData) {
+                    const parsedData = JSON.parse(cachedData);
+                    updateDashboard(parsedData);
+                }
+            }
+        }
+
+        function updateDashboard(data) {
+            document.getElementById('totalSales').textContent = '₱' + data.totalPayments.toFixed(2);
+            document.getElementById('totalOrders').textContent = data.totalOrders;
+            document.getElementById('totalCustomers').textContent = data.totalCustomers;
+            document.getElementById('totalProceed').textContent = data.totalProceed;
+        }
+
+        async function fetchSalesChartData() {
+            // For simplicity, fetch sales data for the last 7 days
+            try {
+                const response = await fetch('api/sales_chart_data.php');
+                const data = await response.json();
+                if (data.error) {
+                    console.error(data.error);
+                    return;
+                }
+                const ctx = document.getElementById('salesChart').getContext('2d');
+                const chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Sales',
+                            data: data.sales,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            fill: true,
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching sales chart data:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const cachedData = localStorage.getItem('dashboardData');
+            if (cachedData) {
+                const parsedData = JSON.parse(cachedData);
+                updateDashboard(parsedData);
+            } else {
+                fetchDashboardData();
+            }
+            fetchSalesChartData();
+
+            document.getElementById('refreshDashboard').addEventListener('click', () => {
+                fetchDashboardData();
+                fetchSalesChartData();
+            });
+
+            // Enable polling to refresh dashboard data every 100 milliseconds for near real-time updates
+            setInterval(() => {
+                fetchDashboardData();
+                fetchSalesChartData();
+            }, 0);
+        });
+    </script>
+</body>
+</html>
